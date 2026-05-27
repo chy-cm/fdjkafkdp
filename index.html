@@ -413,6 +413,137 @@
             bottom: 80px;
             right: 40px;
         }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(10, 10, 15, 0.98));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 3rem;
+            max-width: 500px;
+            width: 90%;
+            border-radius: 4px;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--color-gold-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            font-size: 0.9rem;
+            color: rgba(250, 248, 245, 0.6);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(250, 248, 245, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: var(--color-cream);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--color-gold);
+            background: rgba(250, 248, 245, 0.08);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid var(--color-gold);
+            background: transparent;
+            color: var(--color-gold-light);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: var(--color-gold);
+            color: var(--color-bg);
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--color-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -467,7 +598,7 @@
                     </div>
                 </div>
 
-                <a href="#" class="cta-button">预约观展</a>
+                <button class="cta-button" id="reserveBtn">预约观展</button>
             </div>
 
             <div class="scroll-indicator">
@@ -481,6 +612,35 @@
         </footer>
 
         <div class="grain-overlay"></div>
+    </div>
+
+    <!-- 预约模态框 -->
+    <div class="modal" id="reserveModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <div class="modal-header">
+                <h2 class="modal-title">预约观展</h2>
+                <p class="modal-subtitle">填写信息，完成预约</p>
+            </div>
+            <form id="reserveForm">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" class="form-input" placeholder="请输入您的姓名" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">手机号</label>
+                    <input type="tel" class="form-input" placeholder="请输入您的手机号" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">预约日期</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn" id="cancelBtn">取消</button>
+                    <button type="submit" class="modal-btn primary">确认预约</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -507,6 +667,38 @@
 
         document.querySelectorAll('[data-animate]').forEach(el => {
             observer.observe(el);
+        });
+
+        // 预约模态框功能
+        const reserveBtn = document.getElementById('reserveBtn');
+        const reserveModal = document.getElementById('reserveModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const reserveForm = document.getElementById('reserveForm');
+
+        function openModal() {
+            reserveModal.classList.add('active');
+        }
+
+        function closeModalFunc() {
+            reserveModal.classList.remove('active');
+        }
+
+        reserveBtn.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFunc);
+        cancelBtn.addEventListener('click', closeModalFunc);
+
+        reserveModal.addEventListener('click', (e) => {
+            if (e.target === reserveModal) {
+                closeModalFunc();
+            }
+        });
+
+        reserveForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('预约成功！我们将在24小时内联系您确认详情。');
+            closeModalFunc();
+            reserveForm.reset();
         });
     </script>
 </body>
