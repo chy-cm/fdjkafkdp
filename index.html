@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光影艺术展 | Lumière Art Exhibition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg: #0a0a0f;
+            --color-gold: #d4af37;
+            --color-gold-light: #f5e6c8;
+            --color-cream: #faf8f5;
+            --color-amber: #ff9500;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-cream);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .poster {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .gradient-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(255, 149, 0, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(10, 10, 15, 1) 0%, rgba(20, 20, 30, 1) 100%);
+            animation: gradientShift 20s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.1);
+            }
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--color-gold);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; top: 80%; animation-delay: -2s; }
+        .particle:nth-child(3) { left: 30%; top: 40%; animation-delay: -4s; }
+        .particle:nth-child(4) { left: 50%; top: 60%; animation-delay: -6s; }
+        .particle:nth-child(5) { left: 70%; top: 30%; animation-delay: -8s; }
+        .particle:nth-child(6) { left: 80%; top: 70%; animation-delay: -10s; }
+        .particle:nth-child(7) { left: 90%; top: 50%; animation-delay: -12s; }
+        .particle:nth-child(8) { left: 15%; top: 90%; animation-delay: -14s; }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.3;
+            }
+            25% {
+                transform: translateY(-30px) translateX(20px);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translateY(-60px) translateX(-10px);
+                opacity: 0.4;
+            }
+            75% {
+                transform: translateY(-30px) translateX(30px);
+                opacity: 0.5;
+            }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 1200px;
+            opacity: 0;
+            animation: fadeInUp 1.2s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .overline {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .title {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 500;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.4s forwards;
+        }
+
+        .title-cn {
+            display: block;
+            color: var(--color-cream);
+            font-style: italic;
+        }
+
+        .title-en {
+            display: block;
+            color: var(--color-gold-light);
+            font-size: 0.4em;
+            font-weight: 400;
+            letter-spacing: 0.15em;
+            margin-top: 0.5rem;
+        }
+
+        .divider {
+            width: 120px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+            margin: 2.5rem auto;
+            opacity: 0;
+            animation: expandWidth 1s ease-out 0.8s forwards;
+        }
+
+        @keyframes expandWidth {
+            from {
+                width: 0;
+                opacity: 0;
+            }
+            to {
+                width: 120px;
+                opacity: 1;
+            }
+        }
+
+        .subtitle {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            font-weight: 300;
+            color: rgba(250, 248, 245, 0.7);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1s forwards;
+        }
+
+        .details {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.2s forwards;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--color-gold);
+            margin-bottom: 0.75rem;
+        }
+
+        .detail-value {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--color-cream);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.25rem 3.5rem;
+            background: transparent;
+            border: 1px solid var(--color-gold);
+            color: var(--color-gold-light);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 1.4s forwards;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--color-gold);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+
+        .cta-button:hover {
+            color: var(--color-bg);
+            border-color: var(--color-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .cta-button:hover::before {
+            left: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 40px;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 1.6s forwards;
+        }
+
+        .brand {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-style: italic;
+            color: rgba(250, 248, 245, 0.4);
+            letter-spacing: 0.1em;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 2s forwards;
+        }
+
+        .scroll-text {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(250, 248, 245, 0.5);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-gold), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% {
+                opacity: 1;
+                height: 40px;
+            }
+            50% {
+                opacity: 0.3;
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 40px 24px;
+            }
+
+            .details {
+                gap: 2rem;
+            }
+
+            .detail-item {
+                flex: 1 1 100%;
+            }
+
+            .cta-button {
+                padding: 1rem 2.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .decorative-line {
+            position: absolute;
+            background: linear-gradient(to right, transparent, var(--color-gold), transparent);
+            opacity: 0.15;
+        }
+
+        .decorative-line.horizontal {
+            width: 200px;
+            height: 1px;
+        }
+
+        .decorative-line.vertical {
+            width: 1px;
+            height: 200px;
+        }
+
+        .decorative-line.top-left {
+            top: 80px;
+            left: 40px;
+        }
+
+        .decorative-line.top-right {
+            top: 80px;
+            right: 40px;
+        }
+
+        .decorative-line.bottom-left {
+            bottom: 80px;
+            left: 40px;
+        }
+
+        .decorative-line.bottom-right {
+            bottom: 80px;
+            right: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="background-layer">
+            <div class="gradient-bg"></div>
+            <div class="particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+        </div>
+
+        <div class="decorative-line horizontal top-left"></div>
+        <div class="decorative-line horizontal top-right"></div>
+        <div class="decorative-line horizontal bottom-left"></div>
+        <div class="decorative-line horizontal bottom-right"></div>
+
+        <div class="content">
+            <div class="hero">
+                <div class="overline">当代艺术邀请展</div>
+                
+                <h1 class="title">
+                    <span class="title-cn">光影艺术展</span>
+                    <span class="title-en">Lumière Art Exhibition</span>
+                </h1>
+
+                <div class="divider"></div>
+
+                <p class="subtitle">
+                    探索光与影的无限可能<br>
+                    在明暗之间，感受艺术的永恒魅力
+                </p>
+
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">展期</div>
+                        <div class="detail-value">2026.06.15 — 08.30</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">地点</div>
+                        <div class="detail-value">上海市当代艺术中心</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">策展</div>
+                        <div class="detail-value">林雅轩</div>
+                    </div>
+                </div>
+
+                <a href="#" class="cta-button">预约观展</a>
+            </div>
+
+            <div class="scroll-indicator">
+                <span class="scroll-text">Scroll</span>
+                <div class="scroll-line"></div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="brand">Shanghai Contemporary Art Center</div>
+        </footer>
+
+        <div class="grain-overlay"></div>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            const particles = document.querySelectorAll('.particle');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            particles.forEach((particle, index) => {
+                const speed = (index + 1) * 0.5;
+                const xMove = (x - 0.5) * speed * 30;
+                const yMove = (y - 0.5) * speed * 30;
+                particle.style.transform = `translate(${xMove}px, ${yMove}px)`;
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
