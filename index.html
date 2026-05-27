@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="财经知识小课堂 - 轻松学习金融知识">
+    <title>财经知识小课堂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #1557b0;
+            --secondary: #f8f9fa;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --success: #34a853;
+            --warning: #fbbc04;
+            --error: #ea4335;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        
+        .modal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .icon-large {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+        
+        .icon-medium {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 160px;
+            touch-action: manipulation;
+        }
+        
+        .btn:hover, .btn:focus {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text-primary);
+            margin-top: 12px;
+        }
+        
+        .btn-secondary:hover {
+            background: #e8eaed;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--secondary);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        
+        .knowledge-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .knowledge-card h3 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        
+        .knowledge-card p {
+            font-size: 15px;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 16px 20px;
+            background: var(--secondary);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        
+        .option:hover {
+            border-color: var(--primary);
+            background: #e8f0fe;
+        }
+        
+        .option.correct {
+            background: #e6f4ea;
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .option.wrong {
+            background: #fce8e6;
+            border-color: var(--error);
+            color: var(--error);
+        }
+        
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .result-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .score-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 16px 0;
+        }
+        
+        .feedback {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin: 16px 0;
+            line-height: 1.6;
+        }
+        
+        .tip-box {
+            background: #fff8e1;
+            border-left: 4px solid var(--warning);
+            border-radius: 0 8px 8px 0;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        
+        .tip-box .tip-title {
+            font-weight: 600;
+            color: #f57c00;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .tip-box p {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        @media (max-height: 700px) {
+            .modal-card {
+                padding: 24px 20px;
+            }
+            
+            .icon-large {
+                font-size: 60px;
+                margin-bottom: 16px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .knowledge-card {
+                padding: 16px;
+                margin: 12px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="screen-start" class="screen active" aria-hidden="false">
+            <div class="modal-card">
+                <div class="icon-large">💰</div>
+                <h1>财经知识小课堂</h1>
+                <p class="subtitle">轻松学习金融知识，了解财富管理的基础概念，开启你的理财认知之旅</p>
+                <div class="btn-group">
+                    <button type="button" class="btn" data-action="start">开始学习</button>
+                    <button type="button" class="btn btn-secondary" data-action="continue" id="btn-continue" style="display: none;">继续学习</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-lesson1" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="progress-text">第 1 / 4 课</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <div class="icon-medium">🏦</div>
+                <h2>什么是复利？</h2>
+                <div class="knowledge-card">
+                    <h3>💡 核心概念</h3>
+                    <p>复利是指利息计入本金后，在下一个计息周期内继续产生利息的过程。简单说，就是"利滚利"。</p>
+                </div>
+                <div class="knowledge-card">
+                    <h3>📈 复利的威力</h3>
+                    <p>假设本金 1 万元，年利率 10%：<br>
+                    • 单利 10 年后：1 万 + 1 万 = <strong>2 万元</strong><br>
+                    • 复利 10 年后：1 万 × (1+10%)^10 ≈ <strong>2.59 万元</strong></p>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-title">💡 温馨提示</div>
+                    <p>复利是时间的朋友，越早开始，积累越多。这也是长期投资的核心逻辑。</p>
+                </div>
+                <button type="button" class="btn" data-action="next-lesson">继续下一课</button>
+            </div>
+        </div>
+
+        <div id="screen-lesson2" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="progress-text">第 2 / 4 课</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+                <div class="icon-medium">📊</div>
+                <h2>分散投资的意义</h2>
+                <div class="knowledge-card">
+                    <h3>🎯 核心原则</h3>
+                    <p>不要把所有鸡蛋放在同一个篮子里。通过配置不同类型的资产，降低整体风险。</p>
+                </div>
+                <div class="knowledge-card">
+                    <h3>📊 常见的资产类别</h3>
+                    <p>• <strong>股票</strong>：高风险高收益<br>
+                    • <strong>债券</strong>：稳健收益，风险较低<br>
+                    • <strong>现金/货币基金</strong>：流动性强，收益稳定<br>
+                    • <strong>黄金/大宗商品</strong>：对冲通胀</p>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-title">💡 温馨提示</div>
+                    <p>合理的资产配置需要根据个人风险承受能力、投资目标和投资期限来制定。</p>
+                </div>
+                <button type="button" class="btn" data-action="next-lesson">继续下一课</button>
+            </div>
+        </div>
+
+        <div id="screen-lesson3" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="progress-text">第 3 / 4 课</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <div class="icon-medium">⏰</div>
+                <h2>长期投资的优势</h2>
+                <div class="knowledge-card">
+                    <h3>⏳ 时间的价值</h3>
+                    <p>短期内市场波动难以预测，但长期来看，优质资产往往能穿越周期，获得稳健回报。</p>
+                </div>
+                <div class="knowledge-card">
+                    <h3>🎯 避免频繁交易</h3>
+                    <p>频繁买卖不仅增加交易成本，还容易因追涨杀跌导致亏损。保持耐心，长期持有是关键。</p>
+                </div>
+                <div class="tip-box">
+                    <div class="tip-title">💡 温馨提示</div>
+                    <p>投资是认知的变现，保持学习，不断提升自己的金融素养。</p>
+                </div>
+                <button type="button" class="btn" data-action="next-lesson">继续下一课</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="progress-text">知识小测验</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="quiz-progress" style="width: 0%"></div>
+                </div>
+                <h2 id="quiz-question" class="question"></h2>
+                <div id="quiz-options" class="options"></div>
+            </div>
+        </div>
+
+        <div id="screen-result" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="result-icon" id="result-icon">🏆</div>
+                <h2 id="result-title">学习成果</h2>
+                <div class="score-display" id="score-display">0/0</div>
+                <p class="feedback" id="result-feedback"></p>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-correct">0</div>
+                        <div class="stat-label">答对题数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">总题数</div>
+                    </div>
+                </div>
+                <button type="button" class="btn" data-action="restart">再学一遍</button>
+                <button type="button" class="btn btn-secondary" data-action="home">返回首页</button>
+            </div>
+        </div>
+
+        <div id="screen-complete" class="screen" aria-hidden="true">
+            <div class="modal-card">
+                <div class="icon-large">🎓</div>
+                <h1>恭喜完成学习</h1>
+                <p class="subtitle">你已经完成了财经知识小课堂的全部课程，继续保持学习的热情吧！</p>
+                <div class="btn-group">
+                    <button type="button" class="btn" data-action="quiz">开始测验</button>
+                    <button type="button" class="btn btn-secondary" data-action="home">返回首页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const STORAGE_PREFIX = 'finance_class_';
+            const LESSONS = ['lesson1', 'lesson2', 'lesson3'];
+            const QUIZ_DATA = [
+                {
+                    question: '复利的核心特点是什么？',
+                    options: ['利息不计入本金', '利息计入本金后继续产生利息', '利息固定不变', '只在本金上计算利息'],
+                    correct: 1,
+                    explanation: '复利的核心是"利滚利"，即利息计入本金后在下一个周期继续产生利息。'
+                },
+                {
+                    question: '以下哪种不属于常见的资产类别？',
+                    options: ['股票', '债券', '彩票', '黄金'],
+                    correct: 2,
+                    explanation: '常见的资产类别包括股票、债券、现金/货币基金和黄金等，彩票不属于投资资产。'
+                },
+                {
+                    question: '为什么长期投资通常比短期投机更稳健？',
+                    options: ['长期投资风险更高', '短期市场波动难以预测', '优质资产长期能穿越周期', 'BC都是正确的'],
+                    correct: 3,
+                    explanation: '短期市场波动难以预测，而优质资产长期来看往往能穿越周期，获得稳健回报。'
+                }
+            ];
+            
+            let state = {
+                currentLesson: 0,
+                quizIndex: 0,
+                quizScore: 0,
+                hasStarted: false
+            };
+            
+            function loadState() {
+                try {
+                    const saved = localStorage.getItem(STORAGE_PREFIX + 'progress');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        state = { ...state, ...data };
+                    }
+                } catch (e) {
+                    console.warn('Failed to load state:', e);
+                }
+                updateContinueButton();
+            }
+            
+            function saveState() {
+                try {
+                    localStorage.setItem(STORAGE_PREFIX + 'progress', JSON.stringify(state));
+                } catch (e) {
+                    console.warn('Failed to save state:', e);
+                }
+            }
+            
+            function updateContinueButton() {
+                const btn = document.getElementById('btn-continue');
+                if (state.hasStarted && state.currentLesson < LESSONS.length) {
+                    btn.style.display = 'inline-block';
+                    btn.textContent = '继续学习 (第' + (state.currentLesson + 1) + '课)';
+                } else {
+                    btn.style.display = 'none';
+                }
+            }
+            
+            function hideAllScreens() {
+                document.querySelectorAll('.screen').forEach(function(node) {
+                    node.classList.remove('active');
+                    node.setAttribute('aria-hidden', 'true');
+                });
+            }
+            
+            function showScreen(id) {
+                hideAllScreens();
+                var target = document.getElementById(id);
+                if (!target) return;
+                target.classList.add('active');
+                target.setAttribute('aria-hidden', 'false');
+            }
+            
+            function handleAction(action) {
+                switch(action) {
+                    case 'start':
+                        state.hasStarted = true;
+                        state.currentLesson = 0;
+                        saveState();
+                        updateContinueButton();
+                        showScreen('screen-' + LESSONS[state.currentLesson]);
+                        break;
+                        
+                    case 'continue':
+                        showScreen('screen-' + LESSONS[state.currentLesson]);
+                        break;
+                        
+                    case 'next-lesson':
+                        state.currentLesson++;
+                        saveState();
+                        if (state.currentLesson < LESSONS.length) {
+                            showScreen('screen-' + LESSONS[state.currentLesson]);
+                        } else {
+                            showScreen('screen-complete');
+                        }
+                        break;
+                        
+                    case 'quiz':
+                        state.quizIndex = 0;
+                        state.quizScore = 0;
+                        saveState();
+                        showScreen('screen-quiz');
+                        loadQuizQuestion();
+                        break;
+                        
+                    case 'restart':
+                        state.currentLesson = 0;
+                        state.quizIndex = 0;
+                        state.quizScore = 0;
+                        saveState();
+                        updateContinueButton();
+                        showScreen('screen-start');
+                        break;
+                        
+                    case 'home':
+                        updateContinueButton();
+                        showScreen('screen-start');
+                        break;
+                }
+            }
+            
+            function loadQuizQuestion() {
+                if (state.quizIndex >= QUIZ_DATA.length) {
+                    showQuizResult();
+                    return;
+                }
+                
+                var quiz = QUIZ_DATA[state.quizIndex];
+                var questionEl = document.getElementById('quiz-question');
+                var optionsEl = document.getElementById('quiz-options');
+                var progressEl = document.getElementById('quiz-progress');
+                
+                questionEl.textContent = quiz.question;
+                progressEl.style.width = ((state.quizIndex / QUIZ_DATA.length) * 100) + '%';
+                
+                optionsEl.innerHTML = '';
+                quiz.options.forEach(function(option, index) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'option';
+                    btn.textContent = option;
+                    btn.setAttribute('data-index', index);
+                    optionsEl.appendChild(btn);
+                });
+            }
+            
+            function handleQuizAnswer(selectedIndex) {
+                var quiz = QUIZ_DATA[state.quizIndex];
+                var options = document.querySelectorAll('#quiz-options .option');
+                
+                options.forEach(function(opt) {
+                    opt.classList.add('disabled');
+                    var idx = parseInt(opt.getAttribute('data-index'));
+                    if (idx === quiz.correct) {
+                        opt.classList.add('correct');
+                    } else if (idx === selectedIndex) {
+                        opt.classList.add('wrong');
+                    }
+                });
+                
+                if (selectedIndex === quiz.correct) {
+                    state.quizScore++;
+                }
+                saveState();
+                
+                setTimeout(function() {
+                    state.quizIndex++;
+                    saveState();
+                    loadQuizQuestion();
+                }, 1500);
+            }
+            
+            function showQuizResult() {
+                var iconEl = document.getElementById('result-icon');
+                var titleEl = document.getElementById('result-title');
+                var scoreEl = document.getElementById('score-display');
+                var feedbackEl = document.getElementById('result-feedback');
+                var correctEl = document.getElementById('stat-correct');
+                var totalEl = document.getElementById('stat-total');
+                
+                var score = state.quizScore;
+                var total = QUIZ_DATA.length;
+                var percentage = (score / total) * 100;
+                
+                correctEl.textContent = score;
+                totalEl.textContent = total;
+                scoreEl.textContent = score + '/' + total;
+                
+                if (percentage >= 100) {
+                    iconEl.textContent = '🏆';
+                    titleEl.textContent = '满分通过';
+                    feedbackEl.textContent = '太棒了！你对财经基础知识的掌握非常扎实，继续保持！';
+                } else if (percentage >= 66) {
+                    iconEl.textContent = '🌟';
+                    titleEl.textContent = '表现优秀';
+                    feedbackEl.textContent = '做得不错！再回顾一下课程内容，你会有更深的理解。';
+                } else if (percentage >= 33) {
+                    iconEl.textContent = '💪';
+                    titleEl.textContent = '继续努力';
+                    feedbackEl.textContent = '还有进步空间！建议重新学习课程内容，加深理解。';
+                } else {
+                    iconEl.textContent = '📚';
+                    titleEl.textContent = '需要加油';
+                    feedbackEl.textContent = '别灰心！投资自己是最值得的事情，重新开始学习吧。';
+                }
+                
+                showScreen('screen-result');
+            }
+            
+            function init() {
+                document.addEventListener('click', function(e) {
+                    var target = e.target;
+                    if (target.tagName === 'BUTTON' && target.hasAttribute('data-action')) {
+                        e.preventDefault();
+                        handleAction(target.getAttribute('data-action'));
+                    }
+                    
+                    if (target.classList.contains('option') && !target.classList.contains('disabled')) {
+                        var index = parseInt(target.getAttribute('data-index'));
+                        handleQuizAnswer(index);
+                    }
+                });
+                
+                document.addEventListener('touchstart', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        e.target.style.opacity = '0.9';
+                    }
+                }, { passive: true });
+                
+                document.addEventListener('touchend', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        e.target.style.opacity = '1';
+                    }
+                }, { passive: true });
+                
+                loadState();
+            }
+            
+            window.addEventListener('load', function() {
+                try {
+                    init();
+                } catch (error) {
+                    console.error(error);
+                    var fallback = document.createElement('div');
+                    fallback.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff;color:#111;font-size:18px;padding:24px;text-align:center;z-index:9999;';
+                    fallback.textContent = '哎呀，出错了，请重启试试吧~';
+                    document.body.innerHTML = '';
+                    document.body.appendChild(fallback);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
