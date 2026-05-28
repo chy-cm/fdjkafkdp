@@ -1,5 +1,6 @@
 import os
 import uuid
+import asyncio
 from fastapi import UploadFile
 from models.video import Video, VideoCreate
 from models.task import Task, TaskStatus
@@ -57,19 +58,29 @@ class VideoProcessor:
         db.add(task)
         db.commit()
         
-        self.start_processing.delay(task_id)
+        try:
+            self.start_processing.delay(task_id)
+            message = "Upload successful. Processing started (async)."
+        except Exception:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self.run_processing_sync(task_id))
+            message = "Upload successful. Processing started (sync)."
         
         return {
             "task_id": task_id,
             "video_id": video.id,
             "video_info": video_info,
-            "message": "Upload successful. Processing started."
+            "message": message
         }
     
+    async def run_processing_sync(self, task_id: str):
+        await asyncio.sleep(0.1)
+        self.start_processing_sync(task_id)
+    
     def get_video_info(self, filepath: str):
-        import ffmpeg
-        
         try:
+            import ffmpeg
+            
             probe = ffmpeg.probe(filepath)
             video_stream = next((stream for stream in probe["streams"] if stream["codec_type"] == "video"), None)
             
@@ -86,14 +97,14 @@ class VideoProcessor:
         except Exception as e:
             return {"duration": 0.0}
     
-    @celery_app.task(bind=True, name="video_processing")
-    def start_processing(self, task_id: str):
+    def start_processing_sync(self, task_id: str):
         from services.scene_analyzer import SceneAnalyzer
         from services.clip_optimizer import ClipOptimizer
         from services.narration_engine import NarrationEngine
         from services.audio_synchronizer import AudioSynchronizer
         
-        db = next(get_db())
+        db_gen = get_db()
+        db = next(db_gen)
         task = db.query(Task).filter(Task.id == task_id).first()
         
         if not task:
@@ -140,3 +151,7 @@ class VideoProcessor:
             task.status = TaskStatus.FAILED
             task.error_message = str(e)
             db.commit()
+    
+    @celery_app.task(bind=True, name="video_processing")
+    def start_processing(self, task_id: str):
+        self.start_processing_sync(task_id)
