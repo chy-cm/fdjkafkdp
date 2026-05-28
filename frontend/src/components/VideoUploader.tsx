@@ -5,7 +5,6 @@ import {
   CardContent,
   Container,
   FormControl,
-  FormLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -14,7 +13,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { Upload, Film, Clock, Subtitles } from '@mui/icons-material';
+import { Upload, Movie } from '@mui/icons-material';
 import { videoApi } from '../api';
 import { useDispatch } from 'react-redux';
 import { addTask } from '../store/taskSlice';
@@ -100,14 +99,16 @@ const VideoUploader: React.FC = () => {
 
           <Stack spacing={4}>
             <Box
-              border={2}
-              borderStyle="dashed"
-              borderColor={selectedFile ? 'primary.main' : 'grey.300'}
-              borderRadius={2}
-              p={6}
-              textAlign="center"
+              sx={{
+                border: 2,
+                borderStyle: 'dashed',
+                borderColor: selectedFile ? 'primary.main' : 'grey.300',
+                borderRadius: 2,
+                p: 6,
+                textAlign: 'center',
+                cursor: 'pointer',
+              }}
               onClick={() => document.getElementById('file-input')?.click()}
-              style={{ cursor: 'pointer' }}
             >
               <input
                 id="file-input"
@@ -116,7 +117,7 @@ const VideoUploader: React.FC = () => {
                 onChange={handleFileChange}
                 style={{ display: 'none' }}
               />
-              <Film
+              <Movie
                 sx={{ fontSize: 48, color: selectedFile ? 'primary.main' : 'grey.400' }}
               />
               <Typography mt={2}>
@@ -139,7 +140,6 @@ const VideoUploader: React.FC = () => {
                 value={targetDuration}
                 label="目标时长"
                 onChange={(e) => setTargetDuration(e.target.value as number)}
-                startIcon={<Clock />}
               >
                 {durationOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -157,7 +157,6 @@ const VideoUploader: React.FC = () => {
                 value={subtitleOption}
                 label="字幕选项"
                 onChange={(e) => setSubtitleOption(e.target.value as string)}
-                startIcon={<Subtitles />}
               >
                 {subtitleOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>

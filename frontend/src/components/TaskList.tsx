@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../store';
 import {
   Card,
   CardContent,
@@ -10,7 +11,7 @@ import {
   Button,
   Chip,
 } from '@mui/material';
-import { PlayCircle, Download, XCircle, RefreshCw } from '@mui/icons-material';
+import { PlayCircle, Download, Cancel, Refresh } from '@mui/icons-material';
 import { fetchTasks, cancelTask, fetchTask } from '../store/taskSlice';
 import { RootState } from '../store';
 import { Task } from '../types';
@@ -25,7 +26,7 @@ const statusConfig = {
 
 const TaskList: React.FC = () => {
   const { tasks, loading } = useSelector((state: RootState) => state.tasks);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -145,7 +146,7 @@ const TaskList: React.FC = () => {
                     <Button
                       variant="outlined"
                       size="small"
-                      startIcon={<RefreshCw />}
+                      startIcon={<Refresh />}
                       onClick={() => dispatch(fetchTask(task.id))}
                     >
                       刷新状态
@@ -156,7 +157,7 @@ const TaskList: React.FC = () => {
                       variant="outlined"
                       size="small"
                       color="error"
-                      startIcon={<XCircle />}
+                      startIcon={<Cancel />}
                       onClick={() => handleCancel(task.id)}
                     >
                       取消
