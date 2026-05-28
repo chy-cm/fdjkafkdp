@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    volumes:
+      - ../backend:/app
+      - ../uploads:/workspace/uploads
+      - ../outputs:/workspace/outputs
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=sqlite:///./cinesynopsis.db
+      - UPLOAD_DIR=/workspace/uploads
+      - OUTPUT_DIR=/workspace/outputs
+      - MAX_FILE_SIZE=5242880000
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  celery:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    command: celery -A celery_app worker --loglevel=info
+    volumes:
+      - ../backend:/app
+      - ../uploads:/workspace/uploads
+      - ../outputs:/workspace/outputs
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=sqlite:///./cinesynopsis.db
+      - UPLOAD_DIR=/workspace/uploads
+      - OUTPUT_DIR=/workspace/outputs
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge
